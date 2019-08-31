@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Dialog from '@material-ui/core/Dialog';
@@ -22,34 +22,53 @@ const useStyles = makeStyles( theme => ({
     } 
 }));
 
-
 export default function NavBar (props) {
     const classes = useStyles();
     const [open, setOpen] = useState(false);
     const [user, setUser] = useState({
         userName: '',
         password: '',
-        companyName: props.companyName
+        companyName: props.companyName,
+       
     });
 
+    const logBtnRef = useRef(null);
     function handleCancel() {
         setOpen(false);
+        setUser({
+            userName: '',
+            password: '',
+            companyName: ''
+        });
     }
     function handleClickOpen() {
-        setOpen(true);
+        if(logBtnRef.current.innerText !== 'LOGIN'){
+            props.doLogout();
+        }
+        else{
+            setOpen(true);
+        }
     }
  
     const handleLogin = () => {
         props.dologin(user.userName, user.password);
         setOpen(false);
+        setUser({
+            userName: '',
+            password: '',
+            companyName: ''
+        });
+    }
+
+    const handleRegister = () => {
+        console.log('register')
     }
 
     const handleChange = name => event => {
-        setUser(
-            {
+        setUser( {
                 ...user,
                 [name] : event.target.value
-            }
+            } 
         );
     }
 
@@ -61,12 +80,20 @@ export default function NavBar (props) {
                     <MenuIcon />
                 </IconButton>
                 <Typography variant="h6" className={classes.title}>
-                   {props.company}
+                   {props.loggedUser.companyName}
                 </Typography>
                 <Button 
                     color="inherit"
+                    onClick={handleRegister}
+                    ref={logBtnRef}
+                >Register</Button>
+                <Button 
+                    color="inherit"
                     onClick={handleClickOpen}
-                >Login</Button>
+                    ref={logBtnRef}
+                >{props.loggedUser.isLogged? 'Logout' : 'Login'}</Button>
+                <div style={{verticalAlign:'center'}}>{props.loggedUser.fullName}</div>
+
                 </Toolbar>
            </AppBar>
            <Dialog open={open}>
