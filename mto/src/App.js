@@ -10,11 +10,13 @@ import Home from './Shared/Home';
 import About from './Shared/About';
 import { UserContext } from './Shared/UserContext';
 import { makeStyles } from '@material-ui/styles';
+import Facility from './Facilities/Facility';
 
 const useStyles = makeStyles({
     disabled:{
       cursor:'notAllowed',
       cursorEvents: 'none',
+      pointerEvents: 'none',
       opacity: '0.5'
     }
   }
@@ -66,7 +68,7 @@ function App() {
         <NavBar dologin={handleLogin} doLogout={handleLogout} loggedUser={user}></NavBar>
         <Grid container>
         <UserContext.Provider value={user}>
-          <Grid item md={3}>
+          <Grid item md={2}>
             <SideBar>
               <SideBarItem>
                 <Link to={'/home'}>Home</Link>
@@ -79,10 +81,10 @@ function App() {
               </SideBarItem>
             </SideBar>
           </Grid>
-          <Grid item md={9}>
+          <Grid item md={10}>
             <Main>
-              
                 <Route path={'/home'} component={Home} />
+                <Route path={'/facilities'} component={Facility} />
                 <Route path={'/about'} component={About} />
              
             </Main>

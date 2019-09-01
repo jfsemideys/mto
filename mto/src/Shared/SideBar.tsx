@@ -2,7 +2,7 @@ import React from 'react';
 
 const SideBar = (props: any) =>
 <div 
-  style={{padding: '5px'}} 
+  style={{padding: '5px', backgroundColor: '#dcdcdc'}} 
   {...props}
   />
 
