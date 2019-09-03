@@ -8,7 +8,7 @@ const users = [
         companyName: 'Maraven',
         companyId: 1, 
         isLogged: false,
-        role: 'admin'
+        role: 'create'
     },
     {
         id: 2,
