@@ -8,7 +8,7 @@ const users = [
         companyName: 'Maraven',
         companyId: 1, 
         isLogged: false,
-        role: 'create'
+        role: 'admin'
     },
     {
         id: 2,
@@ -28,7 +28,7 @@ const users = [
         companyName: 'Maraven',
         companyId: 1, 
         isLogged: false,
-        role: 'maint'
+        role: 'admin'
     },
     {
         id: 2,
