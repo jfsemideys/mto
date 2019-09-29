@@ -1,18 +1,16 @@
-import React, { useState, Fragment, Dispatch, SetStateAction, Component } from 'react';
+import React, { useState, Fragment, Dispatch, SetStateAction } from 'react';
 import NavBar from './Shared/NavBar';
-import users from './Data/Users.js';
 import Grid from '@material-ui/core/Grid';
 import Main from './Shared/Main';
 import SideBar from './Shared/SideBar';
-import {BrowserRouter as Router, Link, Route, Redirect} from 'react-router-dom';
+import {BrowserRouter as Router, Link, Route} from 'react-router-dom';
 import SideBarItem from './Shared/SideBarItem';
 import Home from './Shared/Home';
 import About from './Shared/About';
-import { createContext } from 'react';
-
-
 import { makeStyles } from '@material-ui/styles';
 import Facility from './Facilities/Facility';
+import {UserModel} from './Interfaces/Interfaces';
+import { GetUsers } from './Api/Users';
 
 const useStyles = makeStyles(theme => ({
   disabled: {
@@ -26,18 +24,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export interface IUser{
-     userName: string,
-      password: string,
-      id: number,
-      fullName: string,
-      isLogged: boolean,
-      companyName: string,
-      companyId: number,
-      role: string
-}
-
-export const UserContext = React.createContext<[IUser, Dispatch<SetStateAction<IUser>>]>(
+export const UserContext = React.createContext<[UserModel, Dispatch<SetStateAction<UserModel>>]>(
   [
     {
       userName: '',
@@ -53,39 +40,38 @@ export const UserContext = React.createContext<[IUser, Dispatch<SetStateAction<I
   ]
 );
 
-
 function App() {
-    const [user, setUser] = useState<IUser>({
-      userName: '',
-      password: '',
-      id: 0,
-      fullName: '',
-      isLogged: false,
-      companyName: '',
-      companyId: 0,
-      role: ''
-      
+  const [user, setUser] = useState<UserModel>({
+        userName: '',
+        password: '',
+        id: 0,
+        fullName: '',
+        isLogged: false,
+        companyName: '',
+        companyId: 0,
+        role: ''
   });
 
   const classes = useStyles();
 
-  const handleLogin = (username: string, password: string) => {
-    let loginUser: IUser | undefined = users.find(c => c.userName === username && c.password === password);
-
-    if(loginUser !== undefined){
-      setUser({
-        ...user,
-         id: loginUser.id,
-         companyId: loginUser.companyId,
-         role: loginUser.role,
-         userName: loginUser.userName,
-         isLogged: true,
-         companyName: loginUser.companyName,
-         fullName: loginUser.fullName
-      });
-      console.log('handleLogin', user)
-    }  
-  }
+  const handleLogin = async (username: string, password: string) => {
+    GetUsers()
+       .then(usersList => {
+        let loginUser: UserModel | any = usersList.find(c => c.userName === username && c.password === password);
+        if(loginUser !== undefined) {
+          setUser({
+            userName: loginUser.userName,
+            password: loginUser.password,
+            id: loginUser.id,
+            fullName: loginUser.fullName,
+            isLogged: true,
+            companyName: loginUser.companyName,
+            companyId: loginUser.companyId,
+            role: loginUser.role
+          });
+       }
+    })
+  } 
 
   const handleLogout = () => {
        setUser({
@@ -99,9 +85,6 @@ function App() {
         role: ''
       });
   }
-
- 
-  
 
   return (
     <Router>

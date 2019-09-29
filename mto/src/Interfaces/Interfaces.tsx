@@ -7,3 +7,14 @@ export interface FacilityModel{
     companyId: number
 }
 
+export interface UserModel{
+    userName: string,
+     password: string,
+     id: number,
+     fullName: string,
+     isLogged: boolean,
+     companyName: string,
+     companyId: number,
+     role: string
+}
+
