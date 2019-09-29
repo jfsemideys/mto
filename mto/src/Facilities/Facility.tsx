@@ -1,6 +1,6 @@
 import React,  {useState, useEffect, Fragment, useContext} from 'react';
 import {FacilityModel} from '../Interfaces/Interfaces';
-import { GetFacilities } from '../Data/Facilities';
+import { GetFacilities } from '../Api/Facilities';
 import { Paper, Table, TableHead, TableRow, TableCell, TableBody, Typography, IconButton, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import AddIcon from '@material-ui/icons/Add';
@@ -11,6 +11,7 @@ import FacilityView  from '../Facilities/FacilityView';
 import FacilityEdit from './FacilityEdit';
 import {UserContext} from '../App';
 import { Redirect } from 'react-router-dom';
+import { isTryStatement } from '@babel/types';
 const useStyles = makeStyles(theme => ({
     root: {
       width: '100%',
@@ -19,7 +20,6 @@ const useStyles = makeStyles(theme => ({
     },
     table: {
       minWidth: 650,
-      
     },
   }));
 
@@ -27,9 +27,9 @@ export interface IFacilityViewState{
     openDialog: boolean,
     facilityInfo: FacilityModel
 }
+
 const Facility = () => {
     const userContext = useContext(UserContext);
-    console.log(userContext[0])
     const classes = useStyles();
     const [facilities, setFacilities] = useState<Array<FacilityModel>>([]);
     const [facilityView, setFacilityView] = useState<IFacilityViewState>({
@@ -55,12 +55,15 @@ const Facility = () => {
    });
 
     useEffect(() => {
-        const list: FacilityModel[] = GetFacilities.filter(c => c.companyId === userContext[0].companyId);
-        setFacilities(list);
-        }, [GetFacilities.length]);
+        GetFacilities()
+            .then(facilityList => {
+                facilityList.filter(c => c.companyId === userContext[0].companyId)
+                setFacilities(facilityList);
+            });
+    }, []);
 
     const viewDetail = (id: number) => {
-        const facilityDetail: FacilityModel | undefined = GetFacilities.find(c => c.id === id);
+        const facilityDetail: FacilityModel | any = facilities.find(c => c.id === id);
         setFacilityView({
             ...facilityView,
             openDialog: true,
@@ -76,11 +79,22 @@ const Facility = () => {
     }
 
     const handleAddEditSubmit = (fac: FacilityModel) => {
-        fac.id = facilities.length + 1;
-        const list = facilities.concat(fac);
-        setFacilities(
-            list
-        )
+        let isCancelled = false;
+        if(fac.id === 0){
+            fac.id = facilities.length + 1;
+            const list = facilities.concat(fac);
+            setFacilities(
+                list
+            );
+        }
+        else{
+            const item: FacilityModel | any = facilities.find(c => c.id === fac.id);
+            item.name = fac.name;
+            item.description = fac.description;
+            item.code = fac.code;
+
+        }
+        return true;
     }
 
     const openNewFacility = () => {
@@ -104,7 +118,7 @@ const Facility = () => {
     }
 
     const openEdit = (id: number) => {
-        const facilityDetail: FacilityModel | undefined= GetFacilities.find(c => c.id === id);
+        const facilityDetail: FacilityModel | undefined = facilities.find(c => c.id === id);
         setFacilityEdit({
             ...facilityDetail ,
             openDialog: true,
@@ -114,7 +128,6 @@ const Facility = () => {
 
     const handleDelete = (item: FacilityModel) => {
         console.log('item to delete', item)
-
     }
 
     const showFacilityScreen = () => {

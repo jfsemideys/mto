@@ -9,8 +9,7 @@ import MuiDialogActions from '@material-ui/core/DialogActions';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import Typography from '@material-ui/core/Typography';
-import { GetFacilities } from '../Data/Facilities';
-
+import { GetFacilities } from '../Api/Facilities';
 
 const styles = (theme: Theme) => 
     createStyles({
@@ -99,11 +98,13 @@ const FacilityEdit = withStyles(styles)((props: IFacilityDialogViewProps) => {
     );
 
     useEffect(() => {
-        const facilityItem: any = GetFacilities.find(c => c.id === id);
-        setFacility( prev => ({
-            ...facilityItem
-        }));
-
+        GetFacilities()
+          .then(facilityList  => {
+            let facilityItem: FacilityModel | any= facilityList.find(c => c.id === id);
+            setFacility( prev => ({
+              ...facilityItem
+          }));
+        });
     },[openDialog]);
 
     const handleClose = () => {
